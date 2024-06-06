@@ -5,7 +5,9 @@ const productSelected = document.getElementById("productSelected");
 window.onload = function () {
     // console.log("hi");
     populateTheDropdownWithCategory();
+    populateDropdownProductSelected()
     categorySearch.onchange = onChangeCategorySearch;
+    productSelected.onchange = onChangeProductSelected;
 }
 
 function populateTheDropdownWithCategory() {
@@ -29,9 +31,22 @@ function populateTheDropdownWithCategory() {
         })
 
 }
+function populateDropdownProductSelected() {
+    let firstOption = document.createElement("option");
+    let secondOption = document.createElement("option");
+    firstOption.value = "View all";
+    firstOption.innerHTML = "View all"
 
-function onChangeCategorySearch(categoryData) {
-    // console.log(categorySearch.value);
+    secondOption.value = "Search by category";
+    secondOption.innerHTML = "Search by category";
+
+    productSelected.append(firstOption, secondOption);
+}
+
+function onChangeProductSelected() {
+    clearTable();
+    console.log(productSelected.value);
+
     const categoryApi = "http://localhost:8081/api/categories";
 
     fetch(categoryApi)
@@ -39,18 +54,82 @@ function onChangeCategorySearch(categoryData) {
         .then(data => {
 
             for (let categorySelected of data) {
-                if (categorySelected.categoryId == categorySearch.value) {
-                    console.log(categorySelected.name);
+                if (productSelected.value == "View all") {
+                    console.log("hi");
+                    creatCategoryTable(categorySelected);
+                }
+                else {
+                    console.log("hi");
+                    categorySearch.style.display = "block";
                 }
             }
         })
 
 }
 
-function creatCategoryTable(){
-    
+function onChangeCategorySearch() {
+    // console.log(categorySearch.value);
+    clearTable();
+    const categoryApi = "http://localhost:8081/api/categories";
+
+    fetch(categoryApi)
+        .then(response => response.json())
+        .then(data => {
+
+            let categoryIdSelected;
+            for (let categorySelected of data) {
+                if (categorySelected.categoryId == categorySearch.value) {
+                    categoryIdSelected = categorySelected.categoryId
+                    console.log(categoryIdSelected);
+                }
+            }
+            let productApi = "http://localhost:8081/api/products/bycategory/" + categoryIdSelected;
+            console.log(productApi);
+
+            fetchProductApi(productApi);
+
+        })
 }
 
+function fetchProductApi(productUrl) {
+
+    fetch(productUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            for (let categorySelected of data) {
+                creatCategoryTable(categorySelected);
+            }
+
+        })
+}
+
+function creatCategoryTable(categoryItem) {
+    const categoryTable = document.getElementById("categoryTable");
+
+    let row = categoryTable.insertRow(-1)
+
+    let cell = row.insertCell(0);
+    cell.innerHTML = categoryItem.productId;
+
+    let cell1 = row.insertCell(1);
+    cell1.innerHTML = categoryItem.productName;
+
+    let cell3 = row.insertCell(2);
+    cell3.innerHTML = categoryItem.unitPrice;
+
+    let cell4 = row.insertCell(3);
+    cell4.innerHTML = categoryItem.unitsInStock;
+
+    let cell5 = row.insertCell(4);
+    cell5.innerHTML = categoryItem.supplier;
+}
+
+function clearTable() {
+    const categoryTable = document.getElementById("categoryTable");
+    categoryTable.innerHTML = '';
+}
 
 
 
@@ -116,4 +195,10 @@ function creatCategoryTable(){
 // for(let i = 0 ; i < data.length ; i++){
 //     let category = data[i];
 //     console.log(category.categoryId);
+// }
+
+// for (let categorySelected of data) {
+//     if (categorySelected.categoryId == categorySearch.value) {
+//         creatCategoryTable(categorySelected);
+//     }
 // }
