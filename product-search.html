@@ -23,10 +23,10 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                            <a class="nav-link" href="index.html">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="product-search.html">Product search</a>
+                            <a class="nav-link active" aria-current="page" href="product-search.html">Product search</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="product-detail.html">Product detail</a>
@@ -39,17 +39,25 @@
     </header>
 
     <main>
-        <div class="container"> </div>
-        <div class="row">
-            <div class="col">
-                
+        <div class="container">
+            <div class="row">
+                <div class="col mt-5">
+                    <label for="categorySearch">Pick your category of search</label>
+                    <select id="categorySearch" class="form-select">
+                        <option selected value="">Select one</option>
+                    </select>
+                </div>
             </div>
         </div>
 
-        <div class="container"> </div>
-        <div class="row">
-            <div class="col">
-                
+        <div class="container"> 
+            <div class="row mt-5">
+                <div class="col">
+                    <label for="productSelected">Pick your product</label>
+                    <select id="productSelected" class="form-select">
+                        <option selected value="">Select one</option>
+                    </select>
+                </div>
             </div>
         </div>
     </main>
