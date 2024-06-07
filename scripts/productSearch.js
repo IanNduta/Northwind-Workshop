@@ -1,15 +1,26 @@
 "use strict";
+
+
+const searchOption = document.getElementById("searchOption");
+
+//todo: what is this?  two different names used, productselected, but with an id of categorysearch.
 const categorySearch = document.getElementById("categorySearch");
-const productSelected = document.getElementById("productSelected");
 
 window.onload = function () {
     // console.log("hi");
     populateTheDropdownWithCategory();
-    populateDropdownProductSelected()
+
+    //todo: there is no dropdown with products so this name doesn't make sense.
+    populateDropdownProductSelections()
+
+
+    searchOption.onchange = onChangeSearchOption;
+
+    //todo: there is no dropdown that has produts so both the below productSelected and onChangeProductSelected are misnamed
     categorySearch.onchange = onChangeCategorySearch;
-    productSelected.onchange = onChangeProductSelected;
 }
 
+// populates the category search dropdown with categories
 function populateTheDropdownWithCategory() {
     const categoryApi = "http://localhost:8081/api/categories";
 
@@ -31,7 +42,9 @@ function populateTheDropdownWithCategory() {
         })
 
 }
-function populateDropdownProductSelected() {
+
+//todo:  there is no dropdown with prodcuts in it so this is misnamed.
+function populateDropdownProductSelections() {
     let firstOption = document.createElement("option");
     let secondOption = document.createElement("option");
     firstOption.value = "View all";
@@ -40,33 +53,47 @@ function populateDropdownProductSelected() {
     secondOption.value = "Search by category";
     secondOption.innerHTML = "Search by category";
 
-    productSelected.append(firstOption, secondOption);
+    searchOption.append(firstOption, secondOption);
 }
 
-function onChangeProductSelected() {
-    clearTable();
-    console.log(productSelected.value);
+//todo:  there is no "selection" of a product happening except when someone clicks on a hyperlink in the table, but that won't need an event handler.
 
-    const categoryApi = "http://localhost:8081/api/categories";
+//checks to see which search option was selected
+function onChangeSearchOption() {
+    clearTable();
+    console.log(categorySearch.value);
+
+    const categoryApi = "http://localhost:8081/api/products";
 
     fetch(categoryApi)
         .then(response => response.json())
         .then(data => {
+            // console.log(data);
 
-            for (let categorySelected of data) {
-                if (productSelected.value == "View all") {
-                    console.log("hi");
-                    creatCategoryTable(categorySelected);
+            for(let product of data){
+                if (searchOption.value == "View all") {
+                    // console.log("hi");
+                    // console.log(product);
+                    createProductsTable(product);
+                    categorySearch.style.display = "none";
+                    //todo: the below function should be passed a product, and creates a product table - so both "creatCategoryTable" and "cateogrySelected" are not good names in this context
+
                 }
                 else {
                     console.log("hi");
                     categorySearch.style.display = "block";
                 }
             }
+
+
+            // for (let categorySelected of data) {
+
+            // }
         })
 
 }
 
+//when user selects a category from the dropdown, it creates a url using the selected value from the dropdown category.
 function onChangeCategorySearch() {
     // console.log(categorySearch.value);
     clearTable();
@@ -86,49 +113,56 @@ function onChangeCategorySearch() {
             let productApi = "http://localhost:8081/api/products/bycategory/" + categoryIdSelected;
             console.log(productApi);
 
-            fetchProductApi(productApi);
+            fetchSelectsProductApi(productApi);
 
         })
 }
 
-function fetchProductApi(productUrl) {
+//todo: is this getting all products, or only products in a specific category - naming could be more specific to remote that ambiguity
+//gets uses the new url with the category id in it to search through the products api to find products with matchin id then creates a table.
+function fetchSelectsProductApi(productUrl) {
 
     fetch(productUrl)
         .then(response => response.json())
         .then(data => {
             console.log(data);
 
-            for (let categorySelected of data) {
-                creatCategoryTable(categorySelected);
+            //todo: categorySelected misnamed, this shouldn't be a category if the product api returns an array of products
+            for (let productSelected of data) {
+                //todo: below function misnamed
+                createProductsTable(productSelected);
             }
-
         })
 }
 
-function creatCategoryTable(categoryItem) {
-    const categoryTable = document.getElementById("categoryTable");
+//todo: there is no table to display categories, only a table to display products, so this should have a name that reflects that. also it should be passed a product not a cateogryItem
+function createProductsTable(productItem) {
 
-    let row = categoryTable.insertRow(-1)
+    //todo: again, this is for products not categories
+    const productsTable = document.getElementById("productsTable");
+
+    let row = productsTable.insertRow(-1)
 
     let cell = row.insertCell(0);
-    cell.innerHTML = categoryItem.productId;
+    cell.innerHTML = productItem.productId;
 
     let cell1 = row.insertCell(1);
-    cell1.innerHTML = categoryItem.productName;
+    cell1.innerHTML = productItem.productName;
 
     let cell3 = row.insertCell(2);
-    cell3.innerHTML = categoryItem.unitPrice;
+    cell3.innerHTML = productItem.unitPrice;
 
     let cell4 = row.insertCell(3);
-    cell4.innerHTML = categoryItem.unitsInStock;
+    cell4.innerHTML = productItem.unitsInStock;
 
     let cell5 = row.insertCell(4);
-    cell5.innerHTML = categoryItem.supplier;
+    cell5.innerHTML = productItem.supplier;
 }
 
 function clearTable() {
-    const categoryTable = document.getElementById("categoryTable");
-    categoryTable.innerHTML = '';
+    //todo: needs new name.
+    const productsTable = document.getElementById("productsTable");
+    productsTable.innerHTML = '';
 }
 
 
