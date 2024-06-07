@@ -2,26 +2,23 @@
 
 
 const searchOption = document.getElementById("searchOption");
-
-//todo: what is this?  two different names used, productselected, but with an id of categorysearch.
 const categorySearch = document.getElementById("categorySearch");
 
 window.onload = function () {
     // console.log("hi");
-    populateTheDropdownWithCategory();
 
-    //todo: there is no dropdown with products so this name doesn't make sense.
-    populateDropdownProductSelections()
+    populateCategorySearchDropdown();
+
+    populateSearchOptionDropdown()
 
 
     searchOption.onchange = onChangeSearchOption;
 
-    //todo: there is no dropdown that has produts so both the below productSelected and onChangeProductSelected are misnamed
     categorySearch.onchange = onChangeCategorySearch;
 }
 
 // populates the category search dropdown with categories
-function populateTheDropdownWithCategory() {
+function populateCategorySearchDropdown() {
     const categoryApi = "http://localhost:8081/api/categories";
 
     fetch(categoryApi)
@@ -43,8 +40,7 @@ function populateTheDropdownWithCategory() {
 
 }
 
-//todo:  there is no dropdown with prodcuts in it so this is misnamed.
-function populateDropdownProductSelections() {
+function populateSearchOptionDropdown() {
     let firstOption = document.createElement("option");
     let secondOption = document.createElement("option");
     firstOption.value = "View all";
@@ -55,8 +51,6 @@ function populateDropdownProductSelections() {
 
     searchOption.append(firstOption, secondOption);
 }
-
-//todo:  there is no "selection" of a product happening except when someone clicks on a hyperlink in the table, but that won't need an event handler.
 
 //checks to see which search option was selected
 function onChangeSearchOption() {
@@ -76,8 +70,6 @@ function onChangeSearchOption() {
                     // console.log(product);
                     createProductsTable(product);
                     categorySearch.style.display = "none";
-                    //todo: the below function should be passed a product, and creates a product table - so both "creatCategoryTable" and "cateogrySelected" are not good names in this context
-
                 }
                 else {
                     console.log("hi");
@@ -85,40 +77,47 @@ function onChangeSearchOption() {
                 }
             }
 
-
-            // for (let categorySelected of data) {
-
-            // }
         })
 
 }
 
 //when user selects a category from the dropdown, it creates a url using the selected value from the dropdown category.
+// function onChangeCategorySearch() {
+//     // console.log(categorySearch.value);
+//     clearTable();
+//     const categoryApi = "http://localhost:8081/api/categories";
+
+//     fetch(categoryApi)
+//         .then(response => response.json())
+//         .then(data => {
+
+//             let categoryIdSelected;
+//             for (let category of data) {
+//                 if (category.categoryId == categorySearch.value) {
+//                     categoryIdSelected = category.categoryId
+//                     console.log(categoryIdSelected);
+//                 }
+//             }
+//             let productApi = "http://localhost:8081/api/products/bycategory/" + categoryIdSelected;
+//             console.log(productApi);
+
+//             fetchSelectsProductApi(productApi);
+
+//         })
+// }
+
+//when user selects a category from the dropdown, it creates a url using the selected value from the dropdown category.
 function onChangeCategorySearch() {
     // console.log(categorySearch.value);
     clearTable();
-    const categoryApi = "http://localhost:8081/api/categories";
 
-    fetch(categoryApi)
-        .then(response => response.json())
-        .then(data => {
+    let productApi = "http://localhost:8081/api/products/bycategory/" + categorySearch.value;
+    console.log(productApi);
 
-            let categoryIdSelected;
-            for (let categorySelected of data) {
-                if (categorySelected.categoryId == categorySearch.value) {
-                    categoryIdSelected = categorySelected.categoryId
-                    console.log(categoryIdSelected);
-                }
-            }
-            let productApi = "http://localhost:8081/api/products/bycategory/" + categoryIdSelected;
-            console.log(productApi);
+    fetchSelectsProductApi(productApi);
 
-            fetchSelectsProductApi(productApi);
-
-        })
 }
 
-//todo: is this getting all products, or only products in a specific category - naming could be more specific to remote that ambiguity
 //gets uses the new url with the category id in it to search through the products api to find products with matchin id then creates a table.
 function fetchSelectsProductApi(productUrl) {
 
@@ -127,10 +126,9 @@ function fetchSelectsProductApi(productUrl) {
         .then(data => {
             console.log(data);
 
-            //todo: categorySelected misnamed, this shouldn't be a category if the product api returns an array of products
-            for (let productSelected of data) {
+            for (let product of data) {
                 //todo: below function misnamed
-                createProductsTable(productSelected);
+                createProductsTable(product);
             }
         })
 }
@@ -147,7 +145,12 @@ function createProductsTable(productItem) {
     cell.innerHTML = productItem.productId;
 
     let cell1 = row.insertCell(1);
-    cell1.innerHTML = productItem.productName;
+
+    let a = document.createElement("a");
+    a.innerHTML =  productItem.productName;
+    a.href = "product-detail.html?productId=" + productItem.productId;
+    cell1.appendChild(a);
+    //cell1.innerHTML = productItem.productName;
 
     let cell3 = row.insertCell(2);
     cell3.innerHTML = productItem.unitPrice;
